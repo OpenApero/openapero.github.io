@@ -709,6 +709,20 @@
         const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
         const getRestingPupilScale = () => isLoveMode ? 1.68 : 1;
 
+        function isPointOnGithubButton(clientX, clientY) {
+            const rect = githubStarButton.getBoundingClientRect();
+            return (
+                clientX >= rect.left &&
+                clientX <= rect.right &&
+                clientY >= rect.top &&
+                clientY <= rect.bottom
+            );
+        }
+
+        function syncLoveModeWithTouch(clientX, clientY) {
+            setLoveMode(isPointOnGithubButton(clientX, clientY));
+        }
+
         function setNormalMessage(message) {
             normalMessage = message;
             if (!isLoveMode) {
@@ -739,14 +753,19 @@
         document.addEventListener('touchmove', (e) => {
             if (e.touches.length > 0) {
                 updateTrackingCoordinates(e.touches[0].clientX, e.touches[0].clientY);
+                syncLoveModeWithTouch(e.touches[0].clientX, e.touches[0].clientY);
             }
         }, { passive: true });
 
         document.addEventListener('touchstart', (e) => {
             if (e.touches.length > 0) {
                 updateTrackingCoordinates(e.touches[0].clientX, e.touches[0].clientY);
+                syncLoveModeWithTouch(e.touches[0].clientX, e.touches[0].clientY);
             }
         }, { passive: true });
+
+        document.addEventListener('touchend', () => setTimeout(() => setLoveMode(false), 900), { passive: true });
+        document.addEventListener('touchcancel', () => setLoveMode(false), { passive: true });
 
         robotWrapper.addEventListener('click', pokeRobot);
 
@@ -768,11 +787,17 @@
             }
         }
 
-        githubStarButton.addEventListener('mouseenter', () => setLoveMode(true));
+        githubStarButton.addEventListener('pointerenter', () => setLoveMode(true));
+        githubStarButton.addEventListener('pointerdown', () => setLoveMode(true));
         githubStarButton.addEventListener('focus', () => setLoveMode(true));
         githubStarButton.addEventListener('click', () => setLoveMode(true));
-        githubStarButton.addEventListener('mouseleave', () => setLoveMode(false));
+        githubStarButton.addEventListener('pointerleave', () => setLoveMode(false));
+        githubStarButton.addEventListener('pointerup', () => setTimeout(() => setLoveMode(false), 900));
+        githubStarButton.addEventListener('pointercancel', () => setLoveMode(false));
         githubStarButton.addEventListener('blur', () => setLoveMode(false));
+        githubStarButton.addEventListener('touchstart', () => setLoveMode(true), { passive: true });
+        githubStarButton.addEventListener('touchend', () => setTimeout(() => setLoveMode(false), 900), { passive: true });
+        githubStarButton.addEventListener('touchcancel', () => setLoveMode(false), { passive: true });
 
         function animate() {
             time += 0.05;
