@@ -32,7 +32,6 @@
 
         html {
             height: 100%;
-            overflow: hidden;
         }
 
         body {
@@ -45,17 +44,20 @@
             background-size: 44px 44px, 44px 44px, auto, auto;
             color: var(--text-main);
             font-family: 'Courier New', Courier, monospace;
+            min-height: 100vh;
+            min-height: 100svh;
             height: 100vh;
             height: 100svh;
             margin: 0;
-            overflow: hidden;
-            overscroll-behavior: none;
+            overflow-x: hidden;
             text-align: center;
             padding: 32px 18px;
         }
 
         .page-shell {
             width: min(920px, 100%);
+            min-height: calc(100vh - 64px);
+            min-height: calc(100svh - 64px);
             height: calc(100vh - 64px);
             height: calc(100svh - 64px);
             margin: 0 auto;
@@ -75,6 +77,7 @@
                 0 24px 80px rgba(0, 0, 0, 0.38),
                 inset 0 1px 0 rgba(255, 255, 255, 0.04);
             backdrop-filter: blur(10px);
+            max-height: 100%;
         }
 
         h1 {
@@ -105,6 +108,10 @@
 
         /* --- THE PERCEPTION UNIT (FACE) --- */
         .robot-wrapper {
+            appearance: none;
+            background: transparent;
+            border: 0;
+            padding: 0;
             width: 260px;
             height: 200px;
             position: relative;
@@ -493,6 +500,7 @@
             font-weight: bold;
             letter-spacing: 0.5px;
             text-decoration: none;
+            touch-action: manipulation;
             transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
         }
 
@@ -526,6 +534,8 @@
                 padding: 16px;
             }
             .page-shell {
+                min-height: calc(100vh - 32px);
+                min-height: calc(100svh - 32px);
                 height: calc(100vh - 32px);
                 height: calc(100svh - 32px);
             }
@@ -585,6 +595,8 @@
                 padding: 12px;
             }
             .page-shell {
+                min-height: calc(100vh - 24px);
+                min-height: calc(100svh - 24px);
                 height: calc(100vh - 24px);
                 height: calc(100svh - 24px);
             }
@@ -633,6 +645,71 @@
                 margin-top: 10px;
             }
         }
+
+        @media (max-height: 680px) and (max-width: 600px) {
+            body {
+                padding: 8px;
+            }
+            .page-shell {
+                min-height: calc(100vh - 16px);
+                min-height: calc(100svh - 16px);
+                height: calc(100vh - 16px);
+                height: calc(100svh - 16px);
+            }
+            .hero-panel {
+                padding: 18px 10px 14px;
+            }
+            h1 {
+                font-size: 1.9rem;
+            }
+            h2 {
+                font-size: 0.74rem;
+                margin-top: 8px;
+            }
+            .stage {
+                gap: 6px;
+                margin-top: 8px;
+            }
+            .robot-wrapper {
+                height: 132px;
+                transform: scale(0.66);
+            }
+            #message {
+                min-height: 34px;
+                font-size: 0.82rem;
+            }
+            .launch-actions {
+                gap: 6px;
+                margin-top: 8px;
+            }
+            .eta-badge,
+            .code-badge,
+            .github-star-button {
+                min-height: 34px;
+                width: min(240px, 100%);
+                font-size: 0.76rem;
+            }
+            .github-star-button svg {
+                width: 18px;
+                height: 18px;
+            }
+            .instructions {
+                margin-top: 8px;
+                padding: 0 8px;
+                font-size: 0.74rem;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.001ms !important;
+                animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important;
+                transition-duration: 0.001ms !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -643,7 +720,7 @@
             <h2>OPEN Active PErception library for RObotics</h2>
 
             <div class="stage">
-                <div class="robot-wrapper" id="robot" role="button" tabindex="0" aria-label="Debug the OpenApero perception unit">
+                <button class="robot-wrapper" id="robot" type="button" aria-label="Debug the OpenApero perception unit">
                     <div class="heart-burst" aria-hidden="true">
                         <span class="heart heart-one"></span>
                         <span class="heart heart-two"></span>
@@ -658,7 +735,7 @@
                             <div class="eye"><div class="pupil" id="pupil-right"></div></div>
                         </div>
                     </div>
-                </div>
+                </button>
 
                 <div id="message" role="status" aria-live="polite">Booting core perception module...</div>
             </div>
@@ -702,24 +779,27 @@
         let currentPupilX = 0, currentPupilY = 0;
         let pupilScale = 1, targetPupilScale = 1;
         let isLoveMode = false;
+        let isPointerActive = false;
         let normalMessage = "> Booting core perception module...";
-        let time = 0; 
+        let time = 0;
 
         const lerp = (start, end, factor) => start + (end - start) * factor;
         const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
         const getRestingPupilScale = () => isLoveMode ? 1.68 : 1;
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         function isPointOnGithubButton(clientX, clientY) {
             const rect = githubStarButton.getBoundingClientRect();
+            const touchSlop = 12;
             return (
-                clientX >= rect.left &&
-                clientX <= rect.right &&
-                clientY >= rect.top &&
-                clientY <= rect.bottom
+                clientX >= rect.left - touchSlop &&
+                clientX <= rect.right + touchSlop &&
+                clientY >= rect.top - touchSlop &&
+                clientY <= rect.bottom + touchSlop
             );
         }
 
-        function syncLoveModeWithTouch(clientX, clientY) {
+        function syncLoveModeWithPoint(clientX, clientY) {
             setLoveMode(isPointOnGithubButton(clientX, clientY));
         }
 
@@ -749,18 +829,42 @@
             updateTrackingCoordinates(e.clientX, e.clientY);
         });
 
+        // Pointer Events catch touch drags even when the gesture starts away from the GitHub button.
+        document.addEventListener('pointerdown', (e) => {
+            isPointerActive = true;
+            updateTrackingCoordinates(e.clientX, e.clientY);
+            syncLoveModeWithPoint(e.clientX, e.clientY);
+        });
+
+        document.addEventListener('pointermove', (e) => {
+            updateTrackingCoordinates(e.clientX, e.clientY);
+            if (isPointerActive || e.pointerType !== 'mouse') {
+                syncLoveModeWithPoint(e.clientX, e.clientY);
+            }
+        });
+
+        document.addEventListener('pointerup', () => {
+            isPointerActive = false;
+            setTimeout(() => setLoveMode(false), 900);
+        });
+
+        document.addEventListener('pointercancel', () => {
+            isPointerActive = false;
+            setLoveMode(false);
+        });
+
         // Touch Events for Mobile
         document.addEventListener('touchmove', (e) => {
             if (e.touches.length > 0) {
                 updateTrackingCoordinates(e.touches[0].clientX, e.touches[0].clientY);
-                syncLoveModeWithTouch(e.touches[0].clientX, e.touches[0].clientY);
+                syncLoveModeWithPoint(e.touches[0].clientX, e.touches[0].clientY);
             }
         }, { passive: true });
 
         document.addEventListener('touchstart', (e) => {
             if (e.touches.length > 0) {
                 updateTrackingCoordinates(e.touches[0].clientX, e.touches[0].clientY);
-                syncLoveModeWithTouch(e.touches[0].clientX, e.touches[0].clientY);
+                syncLoveModeWithPoint(e.touches[0].clientX, e.touches[0].clientY);
             }
         }, { passive: true });
 
@@ -768,13 +872,6 @@
         document.addEventListener('touchcancel', () => setLoveMode(false), { passive: true });
 
         robotWrapper.addEventListener('click', pokeRobot);
-
-        robotWrapper.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                pokeRobot();
-            }
-        });
 
         function setLoveMode(isActive) {
             isLoveMode = isActive;
@@ -795,24 +892,21 @@
         githubStarButton.addEventListener('pointerup', () => setTimeout(() => setLoveMode(false), 900));
         githubStarButton.addEventListener('pointercancel', () => setLoveMode(false));
         githubStarButton.addEventListener('blur', () => setLoveMode(false));
-        githubStarButton.addEventListener('touchstart', () => setLoveMode(true), { passive: true });
-        githubStarButton.addEventListener('touchend', () => setTimeout(() => setLoveMode(false), 900), { passive: true });
-        githubStarButton.addEventListener('touchcancel', () => setLoveMode(false), { passive: true });
 
         function animate() {
             time += 0.05;
 
             // 1. Hovering Animation
-            const hoverOffset = Math.sin(time) * 8; 
-            
+            const hoverOffset = prefersReducedMotion ? 0 : Math.sin(time) * 8;
+
             // 2. Tilt the Body
-            const maxBodyRotX = 20; 
-            const maxBodyRotY = 25; 
-            
-            let bRotX = -targetY * maxBodyRotX; 
+            const maxBodyRotX = prefersReducedMotion ? 0 : 20;
+            const maxBodyRotY = prefersReducedMotion ? 0 : 25;
+
+            let bRotX = -targetY * maxBodyRotX;
             let bRotY = targetX * maxBodyRotY;
 
-            currentBodyRotX = lerp(currentBodyRotX, bRotX, 0.08); 
+            currentBodyRotX = lerp(currentBodyRotX, bRotX, 0.08);
             currentBodyRotY = lerp(currentBodyRotY, bRotY, 0.08);
 
             robotBody.style.transform = `translate(-50%, calc(-50% + ${hoverOffset}px)) translateZ(30px) rotateX(${currentBodyRotX}deg) rotateY(${currentBodyRotY}deg)`;
@@ -824,7 +918,7 @@
             let pX = targetX * eyeTargetScale * maxPupilDist;
             let pY = targetY * eyeTargetScale * maxPupilDist;
 
-            currentPupilX = lerp(currentPupilX, pX, 0.15); 
+            currentPupilX = lerp(currentPupilX, pX, 0.15);
             currentPupilY = lerp(currentPupilY, pY, 0.15);
             pupilScale = lerp(pupilScale, targetPupilScale, 0.2);
 
@@ -832,7 +926,9 @@
             pupilLeft.style.transform = pupilTransform;
             pupilRight.style.transform = pupilTransform;
 
-            requestAnimationFrame(animate);
+            if (!prefersReducedMotion) {
+                requestAnimationFrame(animate);
+            }
         }
 
         animate();
