@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OpenApero - Coming Soon</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,47 +11,88 @@
 
     <style>
         :root {
-            --bg-color: #0d1117;
-            --text-main: #c9d1d9;
-            --text-muted: #8b949e;
+            --bg-color: #0b1014;
+            --panel: rgba(18, 24, 29, 0.72);
+            --panel-border: rgba(240, 246, 252, 0.12);
+            --text-main: #e6edf3;
+            --text-muted: #9aa7b2;
             --accent: #58a6ff;
             --accent-glow: rgba(88, 166, 255, 0.4);
+            --release: #35c46a;
+            --release-dark: #1f7a43;
+            --warm: #f0b429;
             --robot-body: #161b22;
             --robot-border: #30363d;
             --lens-dark: #0a0e14;
         }
 
+        * {
+            box-sizing: border-box;
+        }
+
         body {
+            background:
+                linear-gradient(rgba(88, 166, 255, 0.055) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(88, 166, 255, 0.055) 1px, transparent 1px),
+                linear-gradient(180deg, rgba(53, 196, 106, 0.12), transparent 44%),
+                linear-gradient(135deg, #0b1014 0%, #111820 48%, #090c10 100%);
             background-color: var(--bg-color);
+            background-size: 44px 44px, 44px 44px, auto, auto;
             color: var(--text-main);
             font-family: 'Courier New', Courier, monospace;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+            text-align: center;
+            padding: 32px 18px;
+        }
+
+        .page-shell {
+            width: min(920px, 100%);
+            min-height: calc(100vh - 64px);
+            margin: 0 auto;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            text-align: center;
-            perspective: 1500px;
+        }
+
+        .hero-panel {
+            width: 100%;
+            padding: 44px 28px 34px;
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 18px;
+            box-shadow:
+                0 24px 80px rgba(0, 0, 0, 0.38),
+                inset 0 1px 0 rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(10px);
         }
 
         h1 {
-            font-size: 4rem;
-            margin-bottom: 0.2rem;
+            font-size: 4.7rem;
+            margin: 0;
             color: var(--accent);
             text-shadow: 0 0 10px var(--accent-glow);
             font-family: 'Michroma', sans-serif;
             padding: 0 10px;
+            letter-spacing: 0;
         }
 
         h2 {
-            font-size: 1.2rem;
+            font-size: 1.05rem;
             color: var(--text-muted);
-            margin-bottom: 2rem;
-            max-width: 600px;
+            margin: 14px auto 0;
+            max-width: 760px;
             line-height: 1.5;
             padding: 0 20px;
+        }
+
+        .stage {
+            display: grid;
+            justify-items: center;
+            gap: 16px;
+            margin-top: 20px;
         }
 
         /* --- THE PERCEPTION UNIT (FACE) --- */
@@ -59,8 +100,9 @@
             width: 260px;
             height: 200px;
             position: relative;
-            margin: 2rem auto;
+            margin: 0 auto;
             cursor: pointer;
+            perspective: 900px;
             transform-style: preserve-3d;
             /* Prevent text selection when tapping rapidly on mobile */
             -webkit-tap-highlight-color: transparent;
@@ -87,6 +129,237 @@
             transform-style: preserve-3d;
             z-index: 5;
             transform: translate(-50%, -50%); 
+        }
+
+        .robot-wrapper:focus-visible .robot-body {
+            border-color: var(--accent);
+            box-shadow:
+                inset 0 0 50px #000,
+                0 30px 60px rgba(0,0,0,0.8),
+                0 0 0 3px rgba(88, 166, 255, 0.28),
+                0 0 30px var(--accent-glow);
+        }
+
+        .heart-burst {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .heart {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: #ff7b9c;
+            border-radius: 3px;
+            opacity: 0;
+            filter: drop-shadow(0 0 10px rgba(255, 123, 156, 0.7));
+            transform: rotate(-45deg) scale(0.4);
+        }
+
+        .heart::before,
+        .heart::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: inherit;
+            border-radius: 50%;
+        }
+
+        .heart::before {
+            top: -8px;
+            left: 0;
+        }
+
+        .heart::after {
+            top: 0;
+            left: 8px;
+        }
+
+        .heart-one {
+            top: 46px;
+            left: 34px;
+        }
+
+        .heart-two {
+            top: 18px;
+            right: 42px;
+            width: 13px;
+            height: 13px;
+            background: #ffb3c5;
+        }
+
+        .heart-two::before,
+        .heart-two::after {
+            width: 13px;
+            height: 13px;
+        }
+
+        .heart-two::before {
+            top: -6.5px;
+        }
+
+        .heart-two::after {
+            left: 6.5px;
+        }
+
+        .heart-three {
+            top: 112px;
+            right: 26px;
+            width: 12px;
+            height: 12px;
+            background: #ffd1dc;
+        }
+
+        .heart-three::before,
+        .heart-three::after {
+            width: 12px;
+            height: 12px;
+        }
+
+        .heart-three::before {
+            top: -6px;
+        }
+
+        .heart-three::after {
+            left: 6px;
+        }
+
+        .heart-four {
+            top: 78px;
+            left: 12px;
+            width: 10px;
+            height: 10px;
+            background: #ff9fba;
+        }
+
+        .heart-five {
+            top: 68px;
+            right: 6px;
+            width: 18px;
+            height: 18px;
+            background: #ff6f9b;
+        }
+
+        .heart-six {
+            top: 134px;
+            left: 76px;
+            width: 11px;
+            height: 11px;
+            background: #ffe0e8;
+        }
+
+        .heart-four::before,
+        .heart-four::after {
+            width: 10px;
+            height: 10px;
+        }
+
+        .heart-four::before {
+            top: -5px;
+        }
+
+        .heart-four::after {
+            left: 5px;
+        }
+
+        .heart-five::before,
+        .heart-five::after {
+            width: 18px;
+            height: 18px;
+        }
+
+        .heart-five::before {
+            top: -9px;
+        }
+
+        .heart-five::after {
+            left: 9px;
+        }
+
+        .heart-six::before,
+        .heart-six::after {
+            width: 11px;
+            height: 11px;
+        }
+
+        .heart-six::before {
+            top: -5.5px;
+        }
+
+        .heart-six::after {
+            left: 5.5px;
+        }
+
+        .robot-wrapper.love-mode .robot-body {
+            animation: lovePulse 720ms ease-in-out infinite;
+        }
+
+        .robot-wrapper.love-mode .eye {
+            box-shadow:
+                inset 0 0 22px #000,
+                0 0 10px rgba(0,0,0,0.5),
+                0 0 22px rgba(88, 166, 255, 0.28);
+        }
+
+        .robot-wrapper.love-mode .pupil {
+            box-shadow:
+                inset -6px -6px 12px rgba(0,0,0,0.7),
+                inset 2px 2px 6px rgba(255,255,255,0.55),
+                0 0 18px var(--accent),
+                0 0 44px var(--accent-glow);
+        }
+
+        .robot-wrapper.love-mode .heart-one {
+            animation: floatHeart 1400ms ease-out infinite;
+        }
+
+        .robot-wrapper.love-mode .heart-two {
+            animation: floatHeart 1400ms 180ms ease-out infinite;
+        }
+
+        .robot-wrapper.love-mode .heart-three {
+            animation: floatHeart 1400ms 340ms ease-out infinite;
+        }
+
+        .robot-wrapper.love-mode .heart-four {
+            animation: floatHeart 1300ms 80ms ease-out infinite;
+        }
+
+        .robot-wrapper.love-mode .heart-five {
+            animation: floatHeart 1550ms 260ms ease-out infinite;
+        }
+
+        .robot-wrapper.love-mode .heart-six {
+            animation: floatHeart 1250ms 460ms ease-out infinite;
+        }
+
+        @keyframes lovePulse {
+            0%, 100% {
+                filter: saturate(1);
+            }
+            50% {
+                filter: saturate(1.35) brightness(1.08);
+            }
+        }
+
+        @keyframes floatHeart {
+            0% {
+                opacity: 0;
+                transform: translateY(10px) rotate(-45deg) scale(0.35);
+            }
+            18% {
+                opacity: 1;
+            }
+            65% {
+                opacity: 0.85;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-34px) rotate(-45deg) scale(1);
+            }
         }
 
         /* --- INTERACTIVE EYES --- */
@@ -149,78 +422,228 @@
 
         /* --- UI ELEMENTS --- */
         #message {
-            font-size: 1.2rem;
-            height: 30px;
-            margin-top: 10px;
-            margin-bottom: 2rem;
+            width: min(680px, 100%);
+            min-height: 28px;
+            margin: 0;
             color: #ff7b72;
             font-weight: bold;
+            font-size: 1rem;
+            line-height: 1.45;
             padding: 0 10px;
         }
 
-        .eta-badge {
-            background: #238636;
-            color: white;
-            padding: 12px 24px;
+        .launch-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .eta-badge,
+        .code-badge {
+            display: inline-flex;
+            align-items: center;
+            min-height: 46px;
+            padding: 0 18px;
             border-radius: 6px;
             font-weight: bold;
-            font-size: 1.2rem;
-            letter-spacing: 1px;
+            font-size: 0.92rem;
+            letter-spacing: 0.8px;
             border: 1px solid rgba(240, 246, 252, 0.1);
             text-transform: uppercase;
         }
 
+        .eta-badge {
+            color: #f4fff7;
+            background: linear-gradient(180deg, var(--release), var(--release-dark));
+            box-shadow: 0 0 18px rgba(53, 196, 106, 0.24);
+        }
+
+        .code-badge {
+            color: #f7e7bd;
+            background: rgba(240, 180, 41, 0.11);
+            border-color: rgba(240, 180, 41, 0.36);
+        }
+
+        .github-star-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 46px;
+            padding: 0 22px;
+            color: #08110c;
+            background: #f0f6fc;
+            border: 1px solid rgba(240, 246, 252, 0.75);
+            border-radius: 6px;
+            box-shadow:
+                0 0 18px rgba(88, 166, 255, 0.22),
+                0 12px 26px rgba(0, 0, 0, 0.24);
+            font-size: 1rem;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            text-decoration: none;
+            transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+        }
+
+        .github-star-button:hover,
+        .github-star-button:focus-visible {
+            background: white;
+            box-shadow:
+                0 0 24px var(--accent-glow),
+                0 14px 30px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+            outline: none;
+        }
+
+        .github-star-button svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+            flex: 0 0 auto;
+        }
+
         .instructions {
-            margin-top: 3rem;
+            margin: 24px 0 0;
             font-size: 0.9rem;
             color: var(--text-muted);
             padding: 0 20px;
         }
 
         /* --- MOBILE RESPONSIVENESS --- */
+        @media (max-width: 760px) {
+            body {
+                padding: 16px;
+            }
+            .page-shell {
+                min-height: calc(100vh - 32px);
+            }
+            .hero-panel {
+                padding: 32px 16px 26px;
+                border-radius: 14px;
+            }
+            h1 {
+                font-size: 3.15rem;
+            }
+        }
+
         @media (max-width: 600px) {
             h1 {
-                font-size: 2.5rem;
+                font-size: 2.55rem;
             }
             h2 {
-                font-size: 0.9rem;
-                margin-bottom: 1.5rem;
+                font-size: 0.86rem;
+                padding: 0;
+            }
+            .stage {
+                gap: 10px;
+                margin-top: 14px;
             }
             .robot-wrapper {
-                margin: 1rem auto;
-                transform: scale(0.9); /* Slightly shrinks the robot to ensure it fits small screens safely */
+                height: 180px;
+                transform: scale(0.88); /* Slightly shrinks the robot to ensure it fits small screens safely */
             }
             #message {
-                font-size: 1rem;
-                height: 40px; /* Gives text room to wrap if needed */
+                min-height: 42px; /* Gives text room to wrap if needed */
             }
-            .eta-badge {
-                font-size: 1rem;
-                padding: 10px 20px;
+            .launch-actions {
+                align-items: stretch;
+                flex-direction: column;
+                gap: 10px;
+                margin-top: 14px;
+            }
+            .eta-badge,
+            .code-badge,
+            .github-star-button {
+                justify-content: center;
+                width: min(280px, 100%);
+                margin: 0 auto;
+            }
+            .github-star-button {
+                min-height: 42px;
+                padding: 0 16px;
+                font-size: 0.9rem;
             }
             .instructions {
-                margin-top: 2rem;
+                margin-top: 14px;
+            }
+        }
+
+        @media (max-width: 390px) {
+            body {
+                padding: 12px;
+            }
+            .page-shell {
+                min-height: calc(100vh - 24px);
+            }
+            .hero-panel {
+                padding: 26px 12px 20px;
+            }
+            h1 {
+                font-size: 2.2rem;
+            }
+            .robot-wrapper {
+                height: 168px;
+                transform: scale(0.82);
+            }
+            #message {
+                font-size: 0.92rem;
+            }
+            .eta-badge,
+            .code-badge,
+            .github-star-button {
+                width: min(260px, 100%);
+            }
+            .instructions {
+                font-size: 0.82rem;
+                line-height: 1.4;
             }
         }
     </style>
 </head>
 <body>
 
-    <h1>OpenApero</h1>
-    <h2>OPEN Active PErception library for RObotics</h2>
+    <main class="page-shell">
+        <section class="hero-panel" aria-labelledby="page-title">
+            <h1 id="page-title">OpenApero</h1>
+            <h2>OPEN Active PErception library for RObotics</h2>
 
-    <div class="robot-wrapper" id="robot" onclick="pokeRobot()">
-        <div class="robot-body" id="body">
-            <div class="perception-cluster">
-                <div class="eye"><div class="pupil" id="pupil-left"></div></div>
-                <div class="eye"><div class="pupil" id="pupil-right"></div></div>
+            <div class="stage">
+                <div class="robot-wrapper" id="robot" role="button" tabindex="0" aria-label="Debug the OpenApero perception unit">
+                    <div class="heart-burst" aria-hidden="true">
+                        <span class="heart heart-one"></span>
+                        <span class="heart heart-two"></span>
+                        <span class="heart heart-three"></span>
+                        <span class="heart heart-four"></span>
+                        <span class="heart heart-five"></span>
+                        <span class="heart heart-six"></span>
+                    </div>
+                    <div class="robot-body" id="body">
+                        <div class="perception-cluster">
+                            <div class="eye"><div class="pupil" id="pupil-left"></div></div>
+                            <div class="eye"><div class="pupil" id="pupil-right"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="message" role="status" aria-live="polite">Booting core perception module...</div>
             </div>
-        </div>
-    </div>
 
-    <div id="message">Booting core perception module...</div>
-    <div class="eta-badge">Releasing Summer 2026</div>
-    <div class="instructions">Move your cursor or touch the screen to test tracking. Tap the unit to debug.</div>
+            <div class="launch-actions" aria-label="OpenApero launch actions">
+                <div class="eta-badge">Releasing Summer 2026</div>
+                <a class="github-star-button" href="https://github.com/OpenApero/openapero" target="_blank" rel="noopener noreferrer" aria-label="Star OpenApero on GitHub">
+                    <svg viewBox="0 0 16 16" aria-hidden="true">
+                        <path d="M8 .25a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38v-1.49c-2.22.48-2.69-.95-2.69-.95-.36-.92-.89-1.17-.89-1.17-.73-.5.06-.49.06-.49.8.06 1.22.83 1.22.83.72 1.22 1.87.87 2.33.67.07-.52.28-.87.5-1.07-1.77-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.56 7.56 0 0 1 4 0c1.53-1.03 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.74-3.65 3.94.29.25.54.73.54 1.48v2.19c0 .21.15.46.55.38A8 8 0 0 0 8 .25Z"></path>
+                    </svg>
+                    Star on GitHub
+                </a>
+                <div class="code-badge">Code coming soon</div>
+            </div>
+
+            <p class="instructions">Move your cursor or touch the screen to test tracking. Tap the unit to debug.</p>
+        </section>
+    </main>
 
     <script>
         const robotWrapper = document.getElementById('robot');
@@ -228,6 +651,7 @@
         const pupilLeft = document.getElementById('pupil-left');
         const pupilRight = document.getElementById('pupil-right');
         const messageDisplay = document.getElementById('message');
+        const githubStarButton = document.querySelector('.github-star-button');
 
         const messages = [
             "Haptic feedback detected. Ouch.",
@@ -244,17 +668,33 @@
         let currentBodyRotX = 0, currentBodyRotY = 0;
         let currentPupilX = 0, currentPupilY = 0;
         let pupilScale = 1, targetPupilScale = 1;
+        let isLoveMode = false;
+        let normalMessage = "> Booting core perception module...";
         let time = 0; 
 
         const lerp = (start, end, factor) => start + (end - start) * factor;
+        const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+        const getRestingPupilScale = () => isLoveMode ? 1.68 : 1;
+
+        function setNormalMessage(message) {
+            normalMessage = message;
+            if (!isLoveMode) {
+                messageDisplay.innerText = normalMessage;
+            }
+        }
 
         // Unified function to handle both mouse and touch coordinates
         function updateTrackingCoordinates(clientX, clientY) {
             const rect = robotWrapper.getBoundingClientRect();
             const centerX = rect.left + rect.width / 2;
             const centerY = rect.top + rect.height / 2;
-            targetX = (clientX - centerX) / (window.innerWidth / 2);
-            targetY = (clientY - centerY) / (window.innerHeight / 2);
+            const deltaX = clientX - centerX;
+            const deltaY = clientY - centerY;
+            const maxDeltaX = deltaX >= 0 ? window.innerWidth - centerX : centerX;
+            const maxDeltaY = deltaY >= 0 ? window.innerHeight - centerY : centerY;
+
+            targetX = clamp(deltaX / Math.max(maxDeltaX, 1), -1, 1);
+            targetY = clamp(deltaY / Math.max(maxDeltaY, 1), -1, 1);
         }
 
         // Mouse Events
@@ -275,6 +715,32 @@
             }
         }, { passive: true });
 
+        robotWrapper.addEventListener('click', pokeRobot);
+
+        robotWrapper.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                pokeRobot();
+            }
+        });
+
+        function setLoveMode(isActive) {
+            isLoveMode = isActive;
+            robotWrapper.classList.toggle('love-mode', isLoveMode);
+            targetPupilScale = getRestingPupilScale();
+            if (isActive) {
+                messageDisplay.innerText = "> Star signal acquired. Appreciation routine online.";
+            } else {
+                messageDisplay.innerText = normalMessage;
+            }
+        }
+
+        githubStarButton.addEventListener('mouseenter', () => setLoveMode(true));
+        githubStarButton.addEventListener('focus', () => setLoveMode(true));
+        githubStarButton.addEventListener('click', () => setLoveMode(true));
+        githubStarButton.addEventListener('mouseleave', () => setLoveMode(false));
+        githubStarButton.addEventListener('blur', () => setLoveMode(false));
+
         function animate() {
             time += 0.05;
 
@@ -294,9 +760,11 @@
             robotBody.style.transform = `translate(-50%, calc(-50% + ${hoverOffset}px)) translateZ(30px) rotateX(${currentBodyRotX}deg) rotateY(${currentBodyRotY}deg)`;
 
             // 3. Move the Pupils
-            const maxPupilDist = 18; 
-            let pX = targetX * maxPupilDist;
-            let pY = targetY * maxPupilDist;
+            const maxPupilDist = isLoveMode ? 8 : 18;
+            const targetMagnitude = Math.hypot(targetX, targetY);
+            const eyeTargetScale = targetMagnitude > 1 ? 1 / targetMagnitude : 1;
+            let pX = targetX * eyeTargetScale * maxPupilDist;
+            let pY = targetY * eyeTargetScale * maxPupilDist;
 
             currentPupilX = lerp(currentPupilX, pX, 0.15); 
             currentPupilY = lerp(currentPupilY, pY, 0.15);
@@ -313,19 +781,19 @@
 
         function pokeRobot() {
             const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-            messageDisplay.innerText = "> " + randomMessage;
+            setNormalMessage("> " + randomMessage);
             
-            targetPupilScale = 0.3; 
+            targetPupilScale = 0.3;
             setTimeout(() => {
-                targetPupilScale = 1.3; 
+                targetPupilScale = 1.3;
                 setTimeout(() => {
-                    targetPupilScale = 1; 
+                    targetPupilScale = getRestingPupilScale();
                 }, 150);
             }, 100);
         }
 
         setTimeout(() => {
-            messageDisplay.innerText = "> Perception cluster online. Waiting for Summer 2026...";
+            setNormalMessage("> Perception cluster online. Waiting for Summer 2026...");
         }, 2500);
 
     </script>
